@@ -38,6 +38,7 @@ class LicensesTransformer
             'expiration_date' => Helper::getFormattedDateObject($license->expiration_date, 'date'),
             'seats' => (int) $license->seats,
             'free_seats_count' => (int) $license->free_seats_count,
+            'seats_used' => (int) (($license->seats)-($license->free_seats_count)),
             'license_name' =>  e($license->license_name),
             'license_email' => e($license->license_email),
             'reassignable' => ($license->reassignable == 1) ? true : false,
