@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>{{ trans('general.assigned_to', ['name' => $show_user->present()->fullName()]) }} - {{ date('Y-m-d H:i', time()) }}</title>
+    <title>{{ trans('general.assigned_to', ['name' => $show_user->present()->fullName()]) }}</title>
     <style>
         body {
             font-family: "Arial, Helvetica", sans-serif;
@@ -49,8 +49,8 @@
     @endif
 @endif
 
-<h3>{{ trans('general.assigned_to', ['name' => $show_user->present()->fullName()]) }} {{ ($show_user->jobtitle!='' ? ' - '.$show_user->jobtitle : '') }}
-</h3>
+<h3>{{ trans('general.assigned_to', ['name' => $show_user->present()->fullName()]) }} {{ ($show_user->jobtitle!='' ? ' - '.$show_user->jobtitle : '') }}<br> Ontvangst / terugkomst IT materialen</h3>
+
     @if ($assets->count() > 0)
         @php
             $counter = 1;
@@ -58,7 +58,7 @@
         <table class="inventory">
             <thead>
             <tr>
-                <th colspan="8">{{ trans('general.assets') }}</th>
+                <th colspan="8" style="background-color: lightgrey;">{{ trans('general.assets') }}</th>
             </tr>
             </thead>
             <thead>
@@ -124,7 +124,7 @@
         <table class="inventory">
             <thead>
             <tr>
-                <th colspan="4">{{ trans('general.licenses') }}</th>
+                <th colspan="4" style="background-color: lightgrey;">{{ trans('general.licenses') }}</th>
             </tr>
             </thead>
             <thead>
@@ -166,7 +166,7 @@
         <table class="inventory">
             <thead>
             <tr>
-                <th colspan="4">{{ trans('general.accessories') }}</th>
+                <th colspan="4" style="background-color: lightgrey;">{{ trans('general.accessories') }}</th>
             </tr>
             </thead>
             <thead>
@@ -202,7 +202,7 @@
         <table class="inventory">
             <thead>
             <tr>
-                <th colspan="4">{{ trans('general.consumables') }}</th>
+                <th colspan="4" >{{ trans('general.consumables') }}</th>
             </tr>
             </thead>
             <thead>
@@ -242,8 +242,22 @@
     @endif
 
     <br>
+
+
+    <span style="font-size: 0.8em">
+        <b>Nederlands</b><br>
+        Ondergetekende, hierna de gebruiker genoemd, verklaart op onderstaande datum bovenstaande artikelen en/of licenties in bezit te hebben, of deze zaken te hebben terugbezorgd. Deze materialen en licenties blijven eigendom van MOBIX en kunnen op elk moment teruggevraagd worden.<br>
+        De materialen worden door de gebruiker persoonlijk gebruikt en mogen niet uitgeleend worden of ter beschikking gesteld aan derden. De gebruiker zal deze persoonlijk bewaren en hier “als een goede huisvader” zorg voor dragen.<br>
+        De gebruiker dient bij een eventuele uit dienst of einde contract alle ontvangen materialen terug te bezorgen aan de bevoegde HR of ICT dienst van MOBIX.<br>
+    </span>
     <br>
-    {{ trans('admin/users/general.all_assigned_list_generation')}} {{ Helper::getFormattedDateObject(now(), 'datetime', false) }}
+    <span style="font-size: 0.8em">
+        <b>Français</b><br>
+        Le soussigné, ci-après dénommé l'utilisateur, déclare qu'à la date ci-dessous, il est en possession des articles et/ou licences susmentionnés, ou qu'il a retourné ces articles.<br>
+        Ces matériels restent la propriété du MOBIX et peuvent être demandés en retour à tout moment. Le matériel est destiné à un usage personnel et ne peut être prêté ou mis à la disposition d’autre personnes. L'utilisateur les conservera personnellement et en prendra soin.<br>
+        En cas de résiliation du contrat, l'utilisateur doit retourner tout le matériel reçu au service compétent du MOBIX HR ou ICT. 
+    </span>
+    <br>
     <br>
     <br>
     <table>
@@ -255,7 +269,15 @@
             <td>________________________________________________________</td>
         </tr>
     </table>
-
+    <br>
+    <br>
+    <br>
+    <table>
+        <tr>
+            <td>Medewerker IT / HR</td>
+            <td>________________________________________________________</td>
+        </tr>
+    </table>
 
 </body>
 </html>
