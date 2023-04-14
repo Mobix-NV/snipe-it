@@ -245,7 +245,7 @@
 
 
     <span style="font-size: 0.8em">
-        <b>Nederlands TEST</b><br>
+        <b>Nederlands</b><br>
         Ondergetekende, hierna de gebruiker genoemd, verklaart op onderstaande datum bovenstaande artikelen en/of licenties in bezit te hebben, of deze zaken te hebben terugbezorgd. Deze materialen en licenties blijven eigendom van MOBIX en kunnen op elk moment teruggevraagd worden.<br>
         De materialen worden door de gebruiker persoonlijk gebruikt en mogen niet uitgeleend worden of ter beschikking gesteld aan derden. De gebruiker zal deze persoonlijk bewaren en hier “als een goede huisvader” zorg voor dragen.<br>
         De gebruiker dient bij een eventuele uit dienst of einde contract alle ontvangen materialen terug te bezorgen aan de bevoegde HR of ICT dienst van MOBIX.<br>
