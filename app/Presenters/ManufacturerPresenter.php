@@ -94,7 +94,7 @@ class ManufacturerPresenter extends Presenter
                 'sortable' => true,
                 'switchable' => true,
                 'title' => ' <span class="hidden-md hidden-lg">Licenses</span>'
-                    .'<span class="hidden-xs"><i class="far fa-save fa-lg"></i></span>',
+                    .'<span class="hidden-xs"><i class="far fa-file fa-lg"></i></span>',
                 'visible' => true,
             ],
             [

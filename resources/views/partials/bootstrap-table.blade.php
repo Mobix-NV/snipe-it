@@ -315,7 +315,7 @@
                 item_icon = 'fas fa-tint';
             } else if (value.type == 'license') {
                 item_destination = 'licenses';
-                item_icon = 'far fa-save';
+                item_icon = 'far fa-file';
             } else if (value.type == 'user') {
                 item_destination = 'users';
                 item_icon = 'fas fa-user';

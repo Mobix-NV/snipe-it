@@ -47,7 +47,7 @@ class ActionlogPresenter extends Presenter
         } elseif ($this->itemType() == 'consumable') {
             return 'fas fa-tint';
         } elseif ($this->itemType() == 'license') {
-            return 'far fa-save';
+            return 'far fa-file';
         } elseif ($this->itemType() == 'component') {
             return 'far fa-hdd';
         } elseif ($this->itemType() == 'user') {

@@ -991,7 +991,7 @@ class Helper
             'xml'   => 'far fa-file-alt',
             // Misc
             'pdf'   => 'far fa-file-pdf',
-            'lic'   => 'far fa-save',
+            'lic'   => 'far fa-file',
         ];
 
         if ($extension && array_key_exists($extension, $allowedExtensionMap)) {
@@ -1178,7 +1178,7 @@ class Helper
                 return 'fas fa-tint';
                 break;
             case 'license':
-                return 'far fa-save';
+                return 'far fa-file';
                 break;
             case 'location':
                 return 'fas fa-map-marker-alt';

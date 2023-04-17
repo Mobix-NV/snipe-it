@@ -152,7 +152,7 @@
                                 <li aria-hidden="true"
                                     {!! (Request::is('licenses*') ? ' class="active"' : '') !!} tabindex="-1">
                                     <a href="{{ route('licenses.index') }}" accesskey="2" tabindex="-1">
-                                        <i class="far fa-save fa-fw"></i>
+                                        <i class="far fa-file fa-fw"></i>
                                         <span class="sr-only">{{ trans('general.licenses') }}</span>
                                     </a>
                                 </li>
@@ -224,7 +224,7 @@
                                         @can('create', \App\Models\License::class)
                                             <li {!! (Request::is('licenses/create') ? 'class="active"' : '') !!}>
                                                 <a href="{{ route('licenses.create') }}" tabindex="-1">
-                                                    <i class="far fa-save fa-fw" aria-hidden="true"></i>
+                                                    <i class="far fa-file fa-fw" aria-hidden="true"></i>
                                                     {{ trans('general.license') }}
                                                 </a>
                                             </li>
@@ -576,7 +576,7 @@
                         @can('view', \App\Models\License::class)
                             <li{!! (Request::is('licenses*') ? ' class="active"' : '') !!}>
                                 <a href="{{ route('licenses.index') }}">
-                                    <i class="far fa-save fa-fw"></i>
+                                    <i class="far fa-file fa-fw"></i>
                                     <span>{{ trans('general.licenses') }}</span>
                                 </a>
                             </li>

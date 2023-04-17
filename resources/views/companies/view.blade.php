@@ -30,7 +30,7 @@
                     <li>
                         <a href="#licenses_tab" data-toggle="tab">
                             <span class="hidden-lg hidden-md">
-                            <i class="far fa-save"></i>
+                            <i class="far fa-file"></i>
                             </span>
                             <span class="hidden-xs hidden-sm">{{ trans('general.licenses') }}
                                 {!! (($company->licenses) && ($company->licenses->count() > 0 )) ? '<badge class="badge badge-secondary">'.number_format($company->licenses->count()).'</badge>' : '' !!}

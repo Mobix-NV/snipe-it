@@ -55,7 +55,7 @@
         <p>{{ strtolower(trans('general.licenses')) }}</p>
       </div>
       <div class="icon" aria-hidden="true">
-        <i class="far fa-save"></i>
+        <i class="far fa-file"></i>
       </div>
         @can('view', \App\Models\License::class)
           <a href="{{ route('licenses.index') }}" class="small-box-footer">{{ trans('general.view_all') }} <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
@@ -384,7 +384,7 @@
                                     <span class="sr-only">{{ trans('general.components_count') }}</span>
                                 </th>
                                 <th class="col-sm-1" data-visible="true" data-field="licenses_count" data-sortable="true">
-                                    <i class="far fa-save" aria-hidden="true"></i>
+                                    <i class="far fa-file" aria-hidden="true"></i>
                                     <span class="sr-only">{{ trans('general.licenses_count') }}</span>
                                 </th>
                             </tr>

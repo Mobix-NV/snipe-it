@@ -56,7 +56,7 @@ class CompanyPresenter extends Presenter
                 'searchable' => false,
                 'sortable' => true,
                 'visible' => true,
-                'title' => ' <span class="hidden-xs"><i class="far fa-save"></i></span><span class="hidden-md hidden-lg">'.trans('general.licenses').'</span>',
+                'title' => ' <span class="hidden-xs"><i class="far fa-file"></i></span><span class="hidden-md hidden-lg">'.trans('general.licenses').'</span>',
             ], [
                 'field' => 'accessories_count',
                 'searchable' => false,

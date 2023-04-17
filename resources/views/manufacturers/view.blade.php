@@ -51,7 +51,7 @@
           <a href="#licenses" data-toggle="tab">
 
             <span class="hidden-lg hidden-md">
-              <i class="far fa-save fa-2x"></i>
+              <i class="far fa-file fa-2x"></i>
             </span>
             <span class="hidden-xs hidden-sm">
               {{ trans('general.licenses') }}
