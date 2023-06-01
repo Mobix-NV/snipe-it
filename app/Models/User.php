@@ -65,6 +65,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         'avatar',
         'gravatar',
         'vip',
+        'autoassign_licenses',
     ];
 
     protected $casts = [
@@ -76,8 +77,7 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         'created_at'   => 'datetime',
         'updated_at'   => 'datetime',
         'deleted_at'   => 'datetime',
-        'start_date'   => 'datetime:Y-m-d',
-        'end_date'     => 'datetime:Y-m-d',
+        'autoassign_licenses'    => 'boolean',
     ];
 
     /**
@@ -97,6 +97,12 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
         'location_id'             => 'exists:locations,id|nullable',
         'start_date'              => 'nullable|date_format:Y-m-d',
         'end_date'                => 'nullable|date_format:Y-m-d|after_or_equal:start_date',
+        'autoassign_licenses'     => 'boolean',
+        'address'                 => 'max:191|nullable',
+        'city'                    => 'max:191|nullable',
+        'state'                   => 'min:2|max:191|nullable',
+        'country'                 => 'min:2|max:191|nullable',
+        'zip'                     => 'max:10|nullable',
     ];
 
     /**
@@ -256,20 +262,6 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
     public function getCompleteNameAttribute()
     {
         return $this->last_name.', '.$this->first_name.' ('.$this->username.')';
-    }
-
-    /**
-     * The url for slack notifications.
-     * Used by Notifiable trait.
-     * @return mixed
-     */
-    public function routeNotificationForSlack()
-    {
-        // At this point the endpoint is the same for everything.
-        //  In the future this may want to be adapted for individual notifications.
-        $this->endpoint = \App\Models\Setting::getSettings()->webhook_endpoint;
-
-        return $this->endpoint;
     }
 
 
@@ -652,13 +644,13 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
      */
     public function scopeSimpleNameSearch($query, $search)
     {
-           $query = $query->where('first_name', 'LIKE', '%'.$search.'%')
-               ->orWhere('last_name', 'LIKE', '%'.$search.'%')
-               ->orWhereRaw('CONCAT('.DB::getTablePrefix().'users.first_name," ",'.DB::getTablePrefix().'users.last_name) LIKE ?', ["%{$search}%"]);
-
-        return $query;
+        return $query->where('first_name', 'LIKE', '%' . $search . '%')
+            ->orWhere('last_name', 'LIKE', '%' . $search . '%')
+            ->orWhereMultipleColumns([
+                'users.first_name',
+                'users.last_name',
+            ], $search);
     }
-
 
     /**
      * Run additional, advanced searches.
@@ -668,9 +660,11 @@ class User extends SnipeModel implements AuthenticatableContract, AuthorizableCo
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function advancedTextSearch(Builder $query, array $terms) {
-
         foreach($terms as $term) {
-            $query = $query->orWhereRaw('CONCAT('.DB::getTablePrefix().'users.first_name," ",'.DB::getTablePrefix().'users.last_name) LIKE ?', ["%{$term}%"]);
+            $query->orWhereMultipleColumns([
+                'users.first_name',
+                'users.last_name',
+            ], $term);
         }
 
         return $query;
