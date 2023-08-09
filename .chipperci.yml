@@ -14,11 +14,14 @@ on:
       - master
       - develop
 
+  pull_request:
+    branches: .*
+
 pipeline:
   - name: Setup
     cmd: |
-      cp -v .env.example .env
-      
+      cp -v .env.testing.example .env
+      cp -v .env.testing.example .env.testing
       composer install --no-interaction --prefer-dist --optimize-autoloader
 
   - name: Generate Key
@@ -31,15 +34,15 @@ pipeline:
 
   - name: Run Migrations
     cmd: |
-      # php artisan migrate --force
+      php artisan migrate --force
 
   - name: PHPUnit Unit Tests
     cmd: |
-      # php artisan test --testsuite Unit
+      php artisan test --testsuite Unit
 
   - name: PHPUnit Feature Tests
     cmd: |
-      # php artisan test --testsuite Feature
+      php artisan test --testsuite Feature
 
 #  - name: Browser Tests
 #    cmd: |
