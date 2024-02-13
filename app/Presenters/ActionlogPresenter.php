@@ -38,62 +38,21 @@ class ActionlogPresenter extends Presenter
 
     public function icon()
     {
-        
-        // User related icons
-        if ($this->itemType() == 'user') {
+        $itemicon = 'fas fa-paperclip';
 
-            if ($this->actionType()=='create new') {
-                return 'fa-solid fa-user-plus';
-            }
-
-            if ($this->actionType()=='merged') {
-                return 'fa-solid fa-people-arrows';
-            }
-
-            if ($this->actionType()=='delete') {
-                return 'fa-solid fa-user-minus';
-            }
-
-            if ($this->actionType()=='delete') {
-                return 'fa-solid fa-user-minus';
-            }
-
-            if ($this->actionType()=='update') {
-                return 'fa-solid fa-user-pen';
-            }
-             return 'fa-solid fa-user';
+        if ($this->itemType() == 'asset') {
+            return 'fas fa-barcode';
+        } elseif ($this->itemType() == 'accessory') {
+            return 'far fa-keyboard';
+        } elseif ($this->itemType() == 'consumable') {
+            return 'fas fa-tint';
+        } elseif ($this->itemType() == 'license') {
+            return 'far fa-file';
+        } elseif ($this->itemType() == 'component') {
+            return 'far fa-hdd';
+        } elseif ($this->itemType() == 'user') {
+            return 'fa-solid fa-people-arrows';
         }
-
-        // Everything else
-        if ($this->actionType()=='create new') {
-            return 'fa-solid fa-plus';
-        }
-
-        if ($this->actionType()=='delete') {
-            return 'fa-solid fa-user-xmark';
-        }
-
-        if ($this->actionType()=='update') {
-            return 'fa-solid fa-pen';
-        }
-
-        if ($this->actionType()=='restore') {
-            return 'fa-solid fa-trash-arrow-up';
-        }
-
-        if ($this->actionType()=='upload') {
-            return 'fas fa-paperclip';
-        }
-
-        if ($this->actionType()=='checkout') {
-            return 'fa-solid fa-rotate-left';
-        }
-
-        if ($this->actionType()=='checkin from') {
-            return 'fa-solid fa-rotate-right';
-        }
-
-        return 'fa-solid fa-rotate-right';
 
     }
 
