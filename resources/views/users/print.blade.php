@@ -246,16 +246,20 @@
 
     <span style="font-size: 0.8em">
         <b>Nederlands</b><br>
-        Ondergetekende, hierna de gebruiker genoemd, verklaart op onderstaande datum bovenstaande artikelen en/of licenties in bezit te hebben, of deze zaken te hebben terugbezorgd. Deze materialen en licenties blijven eigendom van MOBIX en kunnen op elk moment teruggevraagd worden.<br>
-        De materialen worden door de gebruiker persoonlijk gebruikt en mogen niet uitgeleend worden of ter beschikking gesteld aan derden. De gebruiker zal deze persoonlijk bewaren en hier “als een goede huisvader” zorg voor dragen.<br>
+        Ondergetekende, hierna de gebruiker genoemd, verklaart op onderstaande datum bovenstaande artikelen en/of licenties in bezit te hebben, of deze zaken te hebben terugbezorgd. Deze materialen en licenties blijven eigendom van MOBIX en kunnen op elk moment teruggevraagd worden.
+        De materialen worden door de gebruiker persoonlijk gebruikt en mogen niet uitgeleend worden of ter beschikking gesteld aan derden. De gebruiker zal deze persoonlijk bewaren en hier “als een goede huisvader” zorg voor dragen, conform het Mobix tablet beleid (*).
         De gebruiker dient bij een eventuele uit dienst of einde contract alle ontvangen materialen terug te bezorgen aan de bevoegde HR of ICT dienst van MOBIX.<br>
     </span>
     <br>
     <span style="font-size: 0.8em">
         <b>Français</b><br>
-        Le soussigné, ci-après dénommé l'utilisateur, déclare qu'à la date ci-dessous, il est en possession des articles et/ou licences susmentionnés, ou qu'il a retourné ces articles.<br>
-        Ces matériels restent la propriété du MOBIX et peuvent être demandés en retour à tout moment. Le matériel est destiné à un usage personnel et ne peut être prêté ou mis à la disposition d’autre personnes. L'utilisateur les conservera personnellement et en prendra soin.<br>
+        Le soussigné, ci-après dénommé l'utilisateur, déclare qu'à la date ci-dessous, il est en possession des articles et/ou licences susmentionnés, ou qu'il a retourné ces articles.
+        Ces matériels restent la propriété du MOBIX et peuvent être demandés en retour à tout moment. Le matériel est destiné à un usage personnel et ne peut être prêté ou mis à la disposition d’autre personnes. L'utilisateur les conservera personnellement et en prendra soin, se conformer à la procédure de la tablette Mobix (*).
         En cas de résiliation du contrat, l'utilisateur doit retourner tout le matériel reçu au service compétent du MOBIX HR ou ICT. 
+    </span>
+
+    <span style="font-size: 0.8em">
+        (*) tablet beleid terug te vinden ISO Procesoverzicht / la procedure aux tablettes peut être consultée Aperçu du processus ISO
     </span>
     <br>
     <br>
