@@ -12,5 +12,6 @@ return array(
     'support_url'   		=> 'URL Tacaíochta',
     'warranty_lookup_url'   => 'Warranty Lookup URL',
     'update'				=> 'Déantóir Nuashonraithe',
+    'url'   				=> 'URL',
 
 );

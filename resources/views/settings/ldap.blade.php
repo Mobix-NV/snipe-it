@@ -18,15 +18,6 @@
         .checkbox label {
             padding-right: 40px;
         }
-
-        /*
-           Don't make the password field *look* readonly - this is for usability, so admins don't think they can't edit this field.
-         */
-        .form-control[readonly] {
-            background-color: white;
-            color: #555555;
-            cursor:text;
-        }
     </style>
 
     @if ((!function_exists('ldap_connect')) || (!function_exists('ldap_set_option')) || (!function_exists('ldap_bind')))
@@ -43,11 +34,9 @@
     @endif
 
 
-    {{ Form::open(['method' => 'POST', 'files' => false, 'autocomplete' => 'off', 'class' => 'form-horizontal', 'role' => 'form']) }}
+    {{ Form::open(['method' => 'POST', 'files' => false, 'autocomplete' => 'false', 'class' => 'form-horizontal', 'role' => 'form']) }}
     <!-- CSRF Token -->
     {{csrf_field()}}
-
-    <input type="hidden" name="username" value="{{ Request::old('username', $user->username) }}">
 
     <!-- this is a hack to prevent Chrome from trying to autocomplete fields -->
     <input type="text" name="prevent_autofill" id="prevent_autofill" value="" style="display:none;" />
@@ -64,6 +53,7 @@
                     </h4>
                 </div>
                 <div class="box-body">
+
 
                     <div class="col-md-11 col-md-offset-1">
 
@@ -240,7 +230,7 @@
                                 {{ Form::label('ldap_uname', trans('admin/settings/general.ldap_uname')) }}
                             </div>
                             <div class="col-md-8">
-                                {{ Form::text('ldap_uname', Request::old('ldap_uname', $setting->ldap_uname), ['class' => 'form-control','autocomplete' => 'off', 'placeholder' => trans('general.example') .'binduser@example.com', $setting->demoMode]) }}
+                                {{ Form::text('ldap_uname', Request::old('ldap_uname', $setting->ldap_uname), ['class' => 'form-control','placeholder' => trans('general.example') .'binduser@example.com', $setting->demoMode]) }}
                                 {!! $errors->first('ldap_uname', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                 @if (config('app.lock_passwords')===true)
                                     <p class="text-warning"><i class="fas fa-lock" aria-hidden="true"></i> {{ trans('general.feature_disabled') }}</p>
@@ -254,7 +244,7 @@
                                 {{ Form::label('ldap_pword', trans('admin/settings/general.ldap_pword')) }}
                             </div>
                             <div class="col-md-8">
-                                {{ Form::password('ldap_pword', ['class' => 'form-control', 'autocomplete' => 'off', 'onfocus' => "this.removeAttribute('readonly');", $setting->demoMode, ' readonly']) }}
+                                {{ Form::password('ldap_pword', ['class' => 'form-control','placeholder' => trans('general.example') .' binduserpassword', $setting->demoMode]) }}
                                 {!! $errors->first('ldap_pword', '<span class="alert-msg" aria-hidden="true">:message</span>') !!}
                                 @if (config('app.lock_passwords')===true)
                                     <p class="text-warning"><i class="fas fa-lock" aria-hidden="true"></i> {{ trans('general.feature_disabled') }}</p>
@@ -522,7 +512,7 @@
                                     {{ Form::label('test_ldap_sync', 'Test LDAP Sync') }}
                                 </div>
                                 <div class="col-md-8" id="ldaptestrow">
-                                    <a {{ $setting->demoMode }} class="btn btn-default btn-sm" id="ldaptest" style="margin-right: 10px;">{{ trans('admin/settings/general.ldap_test_sync') }}</a>
+                                    <a {{ $setting->demoMode }} class="btn btn-default btn-sm pull-left" id="ldaptest" style="margin-right: 10px;">{{ trans('admin/settings/general.ldap_test_sync') }}</a>
                                 </div>
                                 <div class="col-md-8 col-md-offset-3">
                                     <br />
@@ -548,7 +538,7 @@
                                         <input type="text" name="ldaptest_user" id="ldaptest_user"  class="form-control" placeholder="LDAP username">
                                     </div>
                                     <div class="col-md-4">
-                                    <input type="password" name="ldaptest_password" id="ldaptest_password" class="form-control" placeholder="LDAP password" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');">
+                                    <input type="password" name="ldaptest_password" id="ldaptest_password" class="form-control" placeholder="LDAP password">
                                     </div>
                                     <div class="col-md-3">
                                         <a class="btn btn-default btn-sm" id="ldaptestlogin" style="margin-right: 10px;">{{ trans('admin/settings/general.ldap_test') }}</a>
@@ -700,13 +690,11 @@
             html += '<li class="text-success"><i class="fas fa-check" aria-hidden="true"></i> ' + results.login.message + ' </li>'
             html += '<li class="text-success"><i class="fas fa-check" aria-hidden="true"></i> ' + results.bind.message + ' </li>'
             html += '</ul>'
-            html += '<div style="overflow:auto;">'
             html += '<div>{{ trans('admin/settings/message.ldap.sync_success') }}</div>'
-            html += '<table class="table table-bordered table-condensed" style=" table-layout:fixed; width:100%;background-color: #fff">'
+            html += '<table class="table table-bordered table-condensed" style="background-color: #fff">'
             html += buildLdapResultsTableHeader()
             html += buildLdapResultsTableBody(results.user_sync.users)
-            html += '</table>'
-            html += '</div>'
+            html += '<table>'
             return html;
         }
 

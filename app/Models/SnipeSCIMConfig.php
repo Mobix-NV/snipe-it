@@ -129,20 +129,8 @@ class SnipeSCIMConfig extends \ArieTimmerman\Laravel\SCIMServer\SCIMConfig
                     'preferredLanguage' => AttributeMapping::eloquent('locale'), // Section 5.3.5 of [RFC7231]
                     'locale' => null, // see RFC5646
                     'timezone' => null, // see RFC6557
-                    'active' => (new AttributeMapping())->setAdd(
-                        function ($value, &$object) {
-                            $object->activated = $value;
-                        }
-                    )->setReplace(
-                        function ($value, &$object) {
-                            $object->activated = $value;
-                        }
-                    )->setRead(
-                        // this works as specified.
-                        function (&$object) {
-                            return (bool)$object->activated;
-                        }
-                    ),
+                    'active' => AttributeMapping::eloquent('activated'),
+
                     'password' => AttributeMapping::eloquent('password')->disableRead(),
 
                     // Multi-Valued Attributes

@@ -4,25 +4,26 @@ namespace App\Http\Controllers\Assets;
 
 use App\Helpers\StorageHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UploadFileRequest;
+use App\Http\Requests\AssetFileRequest;
 use App\Models\Actionlog;
 use App\Models\Asset;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use enshrined\svgSanitize\Sanitizer;
 
 class AssetFilesController extends Controller
 {
     /**
      * Upload a file to the server.
      *
-     * @param UploadFileRequest $request
+     * @author [A. Gianotto] [<snipe@snipe.net>]
+     * @param AssetFileRequest $request
      * @param int $assetId
      * @return Redirect
+     * @since [v1.0]
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     *@since [v1.0]
-     * @author [A. Gianotto] [<snipe@snipe.net>]
      */
-    public function store(UploadFileRequest $request, $assetId = null)
+    public function store(AssetFileRequest $request, $assetId = null)
     {
         if (! $asset = Asset::find($assetId)) {
             return redirect()->route('hardware.index')->with('error', trans('admin/hardware/message.does_not_exist'));
@@ -36,7 +37,28 @@ class AssetFilesController extends Controller
             }
 
             foreach ($request->file('file') as $file) {
-                $file_name = $request->handleFile('private_uploads/assets/','hardware-'.$asset->id, $file);
+
+                $extension = $file->getClientOriginalExtension();
+                $file_name = 'hardware-'.$asset->id.'-'.str_random(8).'-'.str_slug(basename($file->getClientOriginalName(), '.'.$extension)).'.'.$extension;
+
+                // Check for SVG and sanitize it
+                if ($extension=='svg') {
+                    \Log::debug('This is an SVG');
+
+                        $sanitizer = new Sanitizer();
+                        $dirtySVG = file_get_contents($file->getRealPath());
+                        $cleanSVG = $sanitizer->sanitize($dirtySVG);
+
+                        try {
+                            Storage::put('private_uploads/assets/'.$file_name, $cleanSVG);
+                        } catch (\Exception $e) {
+                            \Log::debug('Upload no workie :( ');
+                            \Log::debug($e);
+                        }
+                } else {
+                Storage::put('private_uploads/assets/'.$file_name, file_get_contents($file));
+                }
+               
                 
                 $asset->logUpload($file_name, e($request->get('notes')));
             }
@@ -57,14 +79,14 @@ class AssetFilesController extends Controller
      * @return View
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show($assetId = null, $fileId = null)
+    public function show($assetId = null, $fileId = null, $download = true)
     {
         $asset = Asset::find($assetId);
         // the asset is valid
         if (isset($asset->id)) {
             $this->authorize('view', $asset);
 
-            if (! $log = Actionlog::whereNotNull('filename')->where('item_id', $asset->id)->find($fileId)) {
+            if (! $log = Actionlog::find($fileId)) {
                 return response('No matching record for that asset/file', 500)
                     ->header('Content-Type', 'text/plain');
             }
@@ -81,13 +103,12 @@ class AssetFilesController extends Controller
                     ->header('Content-Type', 'text/plain');
             }
 
-            if (request('inline') == 'true') {
+            if ($download != 'true') {
+                if ($contents = file_get_contents(Storage::url($file))) {
+                    return Response::make(Storage::url($file)->header('Content-Type', mime_content_type($file)));
+                }
 
-                $headers = [
-                    'Content-Disposition' => 'inline',
-                ];
-
-                return Storage::download($file, $log->filename, $headers);
+                return JsonResponse::create(['error' => 'Failed validation: '], 500);
             }
 
             return StorageHelper::downloader($file);

@@ -280,8 +280,16 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'throttle:api']], functi
                 Api\ConsumablesController::class, 
                 'getDataView'
             ]
-        )->name('api.consumables.show.users');
+        )->name('api.consumables.showUsers');
 
+
+        // This is LEGACY endpoint URL and should be removed in the next major release
+        Route::get('view/{id}/users',
+              [
+                  Api\ConsumablesController::class,
+                  'getDataView'
+              ]
+        )->name('api.consumables.showUsers');
 
         Route::post('{consumable}/checkout',
             [
@@ -598,16 +606,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'throttle:api']], functi
     ); // end imports API routes
 
 
-        /**
-         * Labels API routes
-         */
-        Route::group(['prefix' => 'labels'], function() {
-            Route::get('{name}', [ Api\LabelsController::class, 'show'])
-                ->where('name', '.*')
-                ->name('api.labels.show');
-            Route::get('', [ Api\LabelsController::class, 'index'])
-                ->name('api.labels.index');
-        });
 
         /**
          * Licenses API routes
@@ -706,13 +704,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'throttle:api']], functi
                 ]
             )->name('api.manufacturers.selectlist');
 
-            Route::post('{id}/restore',
-                [
-                    Api\ManufacturersController::class,
-                    'restore'
-                ]
-            )->name('api.manufacturers.restore');
-
         }); 
     
         Route::resource('manufacturers', 
@@ -748,13 +739,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'throttle:api']], functi
                     'assets'
                 ]
             )->name('api.models.assets');
-
-            Route::post('{id}/restore',
-                [
-                    Api\AssetModelsController::class,
-                    'restore'
-                ]
-            )->name('api.models.restore');
 
         }); 
     

@@ -4,7 +4,6 @@ return [
 
     'asset_tag'   	=> 'Marcação do Ativo',
     'asset_model'       => 'Modelo',
-    'assigned_to'   => 'Atribuído a',
     'book_value'  	=> 'Valor Atual',
     'change' 		=> 'Entrada/Saída',
     'checkout_date' => 'Data de saída',
@@ -15,7 +14,6 @@ return [
     'dl_csv' 		=> 'Baixar CSV',
     'eol' 			=> 'EOL',
     'id'      		=> 'ID',
-    'last_checkin_date' => 'Data do Último Checkin',
     'location' 		=> 'Local',
     'purchase_cost'	=> 'Custo',
     'purchase_date'	=> 'Comprado',

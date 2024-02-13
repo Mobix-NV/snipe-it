@@ -1,6 +1,6 @@
 <?php
 
 return array(
-    'created'   => 'Cruthaithe',
+    'created'   => 'Created',
     'size' => 'Size',
 );

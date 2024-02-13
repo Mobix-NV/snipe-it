@@ -9,7 +9,6 @@ return array(
     'assoc_users'	 => 'Seiceáiltear an ceadúnas seo faoi láthair d\'úsáideoir agus ní féidir é a scriosadh. Seiceáil an ceadúnas sa chéad uair, agus déan iarracht ansin scriosadh arís.',
     'select_asset_or_person' => 'Ní mór duit sócmhainn nó úsáideoir a roghnú, ach níl an dá cheann.',
     'not_found' => 'License not found',
-    'seats_available' => ':seat_count seats available',
 
 
     'create' => array(
@@ -42,8 +41,7 @@ return array(
 
     'checkout' => array(
         'error'   => 'Bhí ceist ann a sheiceáil amach an ceadúnas. Arís, le d\'thoil.',
-        'success' => 'Rinneadh an ceadúnas a sheiceáil go rathúil',
-        'not_enough_seats' => 'Not enough license seats available for checkout',
+        'success' => 'Rinneadh an ceadúnas a sheiceáil go rathúil'
     ),
 
     'checkin' => array(

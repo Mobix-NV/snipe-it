@@ -229,14 +229,6 @@ class LicensePresenter extends Presenter
                 'visible' => true,
                 'formatter' => 'usersLinkObjFormatter',
             ], [
-                'field' => 'assigned_user.email',
-                'searchable' => false,
-                'sortable' => false,
-                'switchable' => true,
-                'title' => trans('admin/users/table.email'),
-                'visible' => true,
-                'formatter' => 'emailFormatter',
-            ], [
                 'field' => 'department',
                 'searchable' => false,
                 'sortable' => true,
@@ -244,7 +236,8 @@ class LicensePresenter extends Presenter
                 'title' => trans('general.department'),
                 'visible' => false,
                 'formatter' => 'departmentNameLinkFormatter',
-            ], [
+            ],
+            [
                 'field' => 'assigned_asset',
                 'searchable' => false,
                 'sortable' => false,
@@ -260,14 +253,6 @@ class LicensePresenter extends Presenter
                 'title' => trans('general.location'),
                 'visible' => true,
                 'formatter' => 'locationsLinkObjFormatter',
-            ],
-            [
-                'field' => 'notes',
-                'searchable' => false,
-                'sortable' => false,
-                'visible' => false,
-                'title' => trans('general.notes'),
-                'formatter' => 'notesFormatter'
             ],
             [
                 'field' => 'checkincheckout',

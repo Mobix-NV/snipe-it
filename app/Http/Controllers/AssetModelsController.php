@@ -4,12 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Helper;
 use App\Http\Requests\ImageUploadRequest;
-use App\Models\Actionlog;
-use App\Models\Asset;
 use App\Models\AssetModel;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Validator;
@@ -80,7 +76,6 @@ class AssetModelsController extends Controller
         $model->depreciation_id = $request->input('depreciation_id');
         $model->name = $request->input('name');
         $model->model_number = $request->input('model_number');
-        $model->min_amt = $request->input('min_amt');
         $model->manufacturer_id = $request->input('manufacturer_id');
         $model->category_id = $request->input('category_id');
         $model->notes = $request->input('notes');
@@ -88,7 +83,7 @@ class AssetModelsController extends Controller
         $model->requestable = Request::has('requestable');
 
         if ($request->input('fieldset_id') != '') {
-            $model->fieldset_id = $request->input('fieldset_id');
+            $model->fieldset_id = e($request->input('fieldset_id'));
         }
 
         $model = $request->handleImages($model);
@@ -101,6 +96,7 @@ class AssetModelsController extends Controller
                 }
             }
 
+            // Redirect to the new model  page
             return redirect()->route('models.index')->with('success', trans('admin/models/message.create.success'));
         }
 
@@ -157,7 +153,6 @@ class AssetModelsController extends Controller
         $model->eol = $request->input('eol');
         $model->name = $request->input('name');
         $model->model_number = $request->input('model_number');
-        $model->min_amt = $request->input('min_amt');
         $model->manufacturer_id = $request->input('manufacturer_id');
         $model->category_id = $request->input('category_id');
         $model->notes = $request->input('notes');
@@ -165,28 +160,19 @@ class AssetModelsController extends Controller
 
         $this->removeCustomFieldsDefaultValues($model);
 
-        $model->fieldset_id = $request->input('fieldset_id');
+        if ($request->input('fieldset_id') == '') {
+            $model->fieldset_id = null;
+        } else {
+            $model->fieldset_id = $request->input('fieldset_id');
 
-        if ($this->shouldAddDefaultValues($request->input())) {
-            if (!$this->assignCustomFieldsDefaultValues($model, $request->input('default_values'))){
-                return redirect()->back()->withInput()->with('error', trans('admin/custom_fields/message.fieldset_default_value.error'));
+            if ($this->shouldAddDefaultValues($request->input())) {
+                if (!$this->assignCustomFieldsDefaultValues($model, $request->input('default_values'))){
+                    return redirect()->back()->withInput()->with('error', trans('admin/custom_fields/message.fieldset_default_value.error'));
+                }
             }
         }
 
-       
-      
-       
         if ($model->save()) {
-            if ($model->wasChanged('eol')) {
-                    if ($model->eol > 0) {
-                        $newEol = $model->eol; 
-                        $model->assets()->whereNotNull('purchase_date')->where('eol_explicit', false)
-                            ->update(['asset_eol_date' => DB::raw('DATE_ADD(purchase_date, INTERVAL ' . $newEol . ' MONTH)')]);
-                        } elseif ($model->eol == 0) {
-    						$model->assets()->whereNotNull('purchase_date')->where('eol_explicit', false)
-    							->update(['asset_eol_date' => DB::raw('null')]);
-					}
-                }
             return redirect()->route('models.index')->with('success', trans('admin/models/message.update.success'));
         }
 
@@ -208,7 +194,7 @@ class AssetModelsController extends Controller
         $this->authorize('delete', AssetModel::class);
         // Check if the model exists
         if (is_null($model = AssetModel::find($modelId))) {
-            return redirect()->route('models.index')->with('error', trans('admin/models/message.does_not_exist'));
+            return redirect()->route('models.index')->with('error', trans('admin/models/message.not_found'));
         }
 
         if ($model->assets()->count() > 0) {
@@ -236,42 +222,22 @@ class AssetModelsController extends Controller
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v1.0]
-     * @param int $id
+     * @param int $modelId
      * @return Redirect
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function getRestore($id)
+    public function getRestore($modelId = null)
     {
         $this->authorize('create', AssetModel::class);
+        // Get user information
+        $model = AssetModel::withTrashed()->find($modelId);
 
-        if ($model = AssetModel::withTrashed()->find($id)) {
+        if (isset($model->id)) {
+            $model->restore();
 
-            if ($model->deleted_at == '') {
-                return redirect()->back()->with('error', trans('general.not_deleted', ['item_type' => trans('general.asset_model')]));
-            }
-
-            if ($model->restore()) {
-                $logaction = new Actionlog();
-                $logaction->item_type = User::class;
-                $logaction->item_id = $model->id;
-                $logaction->created_at = date('Y-m-d H:i:s');
-                $logaction->user_id = Auth::user()->id;
-                $logaction->logaction('restore');
-
-
-                // Redirect them to the deleted page if there are more, otherwise the section index
-                $deleted_models = AssetModel::onlyTrashed()->count();
-                if ($deleted_models > 0) {
-                    return redirect()->back()->with('success', trans('admin/models/message.restore.success'));
-                }
-                return redirect()->route('models.index')->with('success', trans('admin/models/message.restore.success'));
-            }
-
-            // Check validation
-            return redirect()->back()->with('error', trans('general.could_not_restore', ['item_type' => trans('general.asset_model'), 'error' => $model->getErrors()->first()]));
+            return redirect()->route('models.index')->with('success', trans('admin/models/message.restore.success'));
         }
-
-        return redirect()->back()->with('error', trans('admin/models/message.does_not_exist'));
+        return redirect()->back()->with('error', trans('admin/models/message.not_found'));
 
     }
 
@@ -288,7 +254,7 @@ class AssetModelsController extends Controller
     public function show($modelId = null)
     {
         $this->authorize('view', AssetModel::class);
-        $model = AssetModel::withTrashed()->withCount('assets')->find($modelId);
+        $model = AssetModel::withTrashed()->find($modelId);
 
         if (isset($model->id)) {
             return view('models/view', compact('model'));
@@ -320,7 +286,6 @@ class AssetModelsController extends Controller
         return view('models/edit')
             ->with('depreciation_list', Helper::depreciationList())
             ->with('item', $model)
-            ->with('model_id', $model_to_clone->id)
             ->with('clone_model', $model_to_clone);
     }
 

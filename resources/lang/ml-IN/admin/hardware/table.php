@@ -4,7 +4,6 @@ return [
 
     'asset_tag'   	=> 'Asset Tag',
     'asset_model'       => 'Model',
-    'assigned_to'   => 'Assigned To',
     'book_value'  	=> 'Current Value',
     'change' 		=> 'In/Out',
     'checkout_date' => 'Checkout Date',
@@ -14,8 +13,7 @@ return [
     'diff' 			=> 'Diff',
     'dl_csv' 		=> 'Download CSV',
     'eol' 			=> 'EOL',
-    'id'      		=> 'ഐഡി',
-    'last_checkin_date' => 'Last Checkin Date',
+    'id'      		=> 'ID',
     'location' 		=> 'Location',
     'purchase_cost'	=> 'Cost',
     'purchase_date'	=> 'Purchased',

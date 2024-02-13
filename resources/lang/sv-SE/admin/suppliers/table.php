@@ -19,6 +19,7 @@ return array(
     'state'                 => 'stat',
     'suppliers'             => 'Leverantörer',
     'update'                => 'Uppdatera Leverantör',
+    'url'                   => 'URL',
     'view'                  => 'Visa leverantör',
     'view_assets_for'       => 'Visa tillgångar för',
     'zip'                   => 'postnummer',

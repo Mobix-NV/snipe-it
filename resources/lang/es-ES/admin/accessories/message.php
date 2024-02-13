@@ -3,7 +3,6 @@
 return array(
 
     'does_not_exist' => 'El accesorio [:id] no existe.',
-    'not_found' => 'Ese accesorio no fue encontrado.',
     'assoc_users'	 => 'Este accesorio actualmente tiene :count entregados a usuarios. Por favor ingrese los accesorios y vuelva a intentar. ',
 
     'create' => array(
@@ -25,7 +24,7 @@ return array(
      'checkout' => array(
         'error'   		=> 'El accesorio no fue retirado, por favor vuelva a intentarlo',
         'success' 		=> 'Accesorio retirado correctamente.',
-        'unavailable'   => 'El accesorio no está disponible para su retirada. Compruebe la cantidad disponible',
+        'unavailable'   => 'Accessory is not available for checkout. Check quantity available',
         'user_does_not_exist' => 'Este usuario es inválido . Inténtalo de nuevo.'
     ),
 

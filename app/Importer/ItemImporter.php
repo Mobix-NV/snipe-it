@@ -10,8 +10,6 @@ use App\Models\Manufacturer;
 use App\Models\Statuslabel;
 use App\Models\Supplier;
 use App\Models\User;
-use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Log;
 
 class ItemImporter extends Importer
 {
@@ -90,14 +88,8 @@ class ItemImporter extends Importer
         }
 
         $this->item['asset_eol_date'] = null;
-            if($this->findCsvMatch($row, 'asset_eol_date') != '') {
-                $csvMatch = $this->findCsvMatch($row, 'asset_eol_date');
-                try {
-                    $this->item['asset_eol_date'] = CarbonImmutable::parse($csvMatch)->format('Y-m-d');
-                } catch (\Exception $e) {
-                    Log::info($e->getMessage());
-                    $this->log('Unable to parse date: '.$csvMatch);
-                }
+        if ($this->findCsvMatch($row, 'asset_eol_date') != '') {
+            $this->item['asset_eol_date'] = date('Y-m-d', strtotime($this->findCsvMatch($row, 'asset_eol_date')));
         }
 
         $this->item['qty'] = $this->findCsvMatch($row, 'quantity');
@@ -372,7 +364,7 @@ class ItemImporter extends Importer
         if (empty($asset_statuslabel_name)) {
             return null;
         }
-       $status = Statuslabel::where(['name' => trim($asset_statuslabel_name)])->first();
+        $status = Statuslabel::where(['name' => $asset_statuslabel_name])->first();
 
         if ($status) {
             $this->log('A matching Status '.$asset_statuslabel_name.' already exists');
@@ -381,7 +373,7 @@ class ItemImporter extends Importer
         }
         $this->log('Creating a new status');
         $status = new Statuslabel();
-        $status->name = trim($asset_statuslabel_name);
+        $status->name = $asset_statuslabel_name;
 
         $status->deployable = 1;
         $status->pending = 0;
@@ -420,7 +412,7 @@ class ItemImporter extends Importer
 
         //Otherwise create a manufacturer.
         $manufacturer = new Manufacturer();
-        $manufacturer->name = trim($item_manufacturer);
+        $manufacturer->name = $item_manufacturer;
         $manufacturer->user_id = $this->user_id;
 
         if ($manufacturer->save()) {

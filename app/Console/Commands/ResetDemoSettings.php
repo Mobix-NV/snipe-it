@@ -63,7 +63,7 @@ class ResetDemoSettings extends Command
         $settings->date_display_format = 'D M d, Y';
         $settings->time_display_format = 'g:iA';
         $settings->thumbnail_max_h = '30';
-        $settings->locale = 'en-US';
+        $settings->locale = 'en';
         $settings->version_footer = 'on';
         $settings->support_footer = null;
         $settings->saml_enabled = '0';
@@ -78,7 +78,7 @@ class ResetDemoSettings extends Command
         $settings->save();
 
         if ($user = User::where('username', '=', 'admin')->first()) {
-            $user->locale = 'en-US';
+            $user->locale = 'en';
             $user->save();
         }
 

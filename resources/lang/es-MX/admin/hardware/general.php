@@ -12,7 +12,6 @@ return [
     'clone'  					=> 'Clonar Equipo',
     'deployable'  				=> 'Desplegable',
     'deleted'  					=> 'Este activo ha sido eliminado.',
-    'delete_confirm'            => '¿Está seguro de que desea eliminar este recurso?',
     'edit'  					=> 'Editar Equipo',
     'model_deleted'  			=> 'Este modelo de equipo fue eliminado. Debes restaurar el moldelo antes de restaurar el activo.',
     'model_invalid'             => 'El Modelo de este Activo no es válido.',
@@ -46,5 +45,4 @@ return [
     'alert_details' => 'Por favor, vea abajo para más detalles.',
     'custom_export' => 'Exportación personalizada',
     'mfg_warranty_lookup' => 'Búsqueda del estado de Garantía para :manufacturer',
-    'user_department' => 'Departamento',
 ];

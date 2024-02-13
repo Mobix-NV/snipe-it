@@ -41,7 +41,7 @@
             </span>
             <span class="hidden-xs hidden-sm">
                 {{ trans('general.assets') }}
-                {!! ($manufacturer->assets()->AssetsForShow()->count() > 0 ) ? '<badge class="badge badge-secondary">'.number_format($manufacturer->assets()->AssetsForShow()->count()).'</badge>' : '' !!}
+                {!! (($manufacturer->assets) && ($manufacturer->assets()->AssetsForShow()->count() > 0 )) ? '<badge class="badge badge-secondary">'.number_format($manufacturer->assets()->AssetsForShow()->count()).'</badge>' : '' !!}
             </span>
 
           </a>
@@ -55,7 +55,7 @@
             </span>
             <span class="hidden-xs hidden-sm">
               {{ trans('general.licenses') }}
-              {!! ($manufacturer->licenses->count() > 0 ) ? '<badge class="badge badge-secondary">'.number_format($manufacturer->licenses->count()).'</badge>' : '' !!}
+              {!! (($manufacturer->licenses) && ($manufacturer->licenses->count() > 0 )) ? '<badge class="badge badge-secondary">'.number_format($manufacturer->licenses->count()).'</badge>' : '' !!}
             </span>
 
           </a>
@@ -68,7 +68,7 @@
             </span>
             <span class="hidden-xs hidden-sm">
               {{ trans('general.accessories') }}
-              {!! ($manufacturer->accessories->count() > 0 ) ? '<badge class="badge badge-secondary">'.number_format($manufacturer->accessories->count()).'</badge>' : '' !!}
+              {!! (($manufacturer->accessories) && ($manufacturer->accessories->count() > 0 )) ? '<badge class="badge badge-secondary">'.number_format($manufacturer->accessories->count()).'</badge>' : '' !!}
             </span>
 
           </a>
@@ -81,7 +81,7 @@
             </span>
             <span class="hidden-xs hidden-sm">
               {{ trans('general.consumables') }}
-              {!! ($manufacturer->consumables->count() > 0 ) ? '<badge class="badge badge-secondary">'.number_format($manufacturer->consumables->count()).'</badge>' : '' !!}
+              {!! (($manufacturer->consumables) && ($manufacturer->consumables->count() > 0 )) ? '<badge class="badge badge-secondary">'.number_format($manufacturer->consumables->count()).'</badge>' : '' !!}
             </span>
 
           </a>

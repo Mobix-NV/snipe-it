@@ -4,27 +4,28 @@ namespace App\Http\Controllers\Components;
 
 use App\Helpers\StorageHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UploadFileRequest;
+use App\Http\Requests\AssetFileRequest;
 use App\Models\Actionlog;
 use App\Models\Component;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use enshrined\svgSanitize\Sanitizer;
 
 class ComponentsFilesController extends Controller
 {
     /**
      * Validates and stores files associated with a component.
      *
-     * @param UploadFileRequest $request
+     * @todo Switch to using the AssetFileRequest form request validator.
+     * @author [A. Gianotto] [<snipe@snipe.net>]
+     * @since [v1.0]
+     * @param AssetFileRequest $request
      * @param int $componentId
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     *@author [A. Gianotto] [<snipe@snipe.net>]
-     * @since [v1.0]
-     * @todo Switch to using the AssetFileRequest form request validator.
      */
-    public function store(UploadFileRequest $request, $componentId = null)
+    public function store(AssetFileRequest $request, $componentId = null)
     {
 
         if (config('app.lock_passwords')) {
@@ -42,7 +43,30 @@ class ComponentsFilesController extends Controller
                 }
 
                 foreach ($request->file('file') as $file) {
-                    $file_name = $request->handleFile('private_uploads/components/','component-'.$component->id, $file);
+
+                    $extension = $file->getClientOriginalExtension();
+                    $file_name = 'component-'.$component->id.'-'.str_random(8).'-'.str_slug(basename($file->getClientOriginalName(), '.'.$extension)).'.'.$extension;
+
+
+                    // Check for SVG and sanitize it
+                    if ($extension == 'svg') {
+                        \Log::debug('This is an SVG');
+                        \Log::debug($file_name);
+
+                        $sanitizer = new Sanitizer();
+                        $dirtySVG = file_get_contents($file->getRealPath());
+                        $cleanSVG = $sanitizer->sanitize($dirtySVG);
+
+                        try {
+                            Storage::put('private_uploads/components/'.$file_name, $cleanSVG);
+                        } catch (\Exception $e) {
+                            \Log::debug('Upload no workie :( ');
+                            \Log::debug($e);
+                        }
+
+                    } else {
+                        Storage::put('private_uploads/components/'.$file_name, file_get_contents($file));
+                    }
 
                     //Log the upload to the log
                     $component->logUpload($file_name, e($request->input('notes')));
@@ -108,7 +132,7 @@ class ComponentsFilesController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function show($componentId = null, $fileId = null)
+    public function show($componentId = null, $fileId = null, $download = true)
     {
         \Log::debug('Private filesystem is: '.config('filesystems.default'));
         $component = Component::find($componentId);
@@ -118,7 +142,7 @@ class ComponentsFilesController extends Controller
             $this->authorize('view', $component);
             $this->authorize('components.files', $component);
 
-            if (! $log = Actionlog::whereNotNull('filename')->where('item_id', $component->id)->find($fileId)) {
+            if (! $log = Actionlog::find($fileId)) {
                 return response('No matching record for that asset/file', 500)
                     ->header('Content-Type', 'text/plain');
             }
@@ -133,17 +157,21 @@ class ComponentsFilesController extends Controller
                     ->header('Content-Type', 'text/plain');
             } else {
 
-                // Display the file inline
-                if (request('inline') == 'true') {
-                    $headers = [
-                        'Content-Disposition' => 'inline',
-                    ];
-                    return Storage::download($file, $log->filename, $headers);
-                }
-
                 if (config('filesystems.default') == 'local') { // TODO - is there any way to fix this at the StorageHelper layer?
                     return StorageHelper::downloader($file);
-                } 
+                } else {
+                    if ($download != 'true') {
+                        \Log::debug('display the file');
+                        if ($contents = file_get_contents(Storage::url($file))) { // TODO - this will fail on private S3 files or large public ones
+                            return Response::make(Storage::url($file)->header('Content-Type', mime_content_type($file)));
+                        }
+
+                        return JsonResponse::create(['error' => 'Failed validation: '], 500);
+                    }
+
+                    return StorageHelper::downloader($file);
+
+                }
             }
         }
 

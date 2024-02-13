@@ -98,9 +98,3 @@
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
-
-<script>
-    $(document).ready(function(){
-        $('#modal-first_name').focus();
-    });
-</script>

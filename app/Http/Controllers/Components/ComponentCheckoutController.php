@@ -20,38 +20,25 @@ class ComponentCheckoutController extends Controller
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @see ComponentCheckoutController::store() method that stores the data.
      * @since [v3.0]
-     * @param int $id
+     * @param int $componentId
      * @return \Illuminate\Contracts\View\View
      * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function create($id)
+    public function create($componentId)
     {
+        // Check if the component exists
+        if (is_null($component = Component::find($componentId))) {
+            // Redirect to the component management page with error
+            return redirect()->route('components.index')->with('error', trans('admin/components/message.not_found'));
+        }
+        $this->authorize('checkout', $component);
 
-        if ($component = Component::find($id)) {
-
-            $this->authorize('checkout', $component);
-
-            // Make sure the category is valid
-            if ($component->category) {
-
-                // Make sure there is at least one available to checkout
-                if ($component->numRemaining() <= 0){
-                    return redirect()->route('components.index')
-                        ->with('error', trans('admin/components/message.checkout.unavailable'));
-                }
-
-                // Return the checkout view
-                return view('components/checkout', compact('component'));
-            }
-
-            // Invalid category
-            return redirect()->route('components.edit', ['component' => $component->id])
-                ->with('error', trans('general.invalid_item_category_single', ['type' => trans('general.component')]));
+        // Make sure there is at least one available to checkout
+        if ($component->numRemaining() <= 0){
+            return redirect()->route('components.index')->with('error', trans('admin/components/message.checkout.unavailable'));
         }
 
-        // Not found
-        return redirect()->route('components.index')->with('error', trans('admin/components/message.not_found'));
-
+        return view('components/checkout', compact('component'));
     }
 
     /**

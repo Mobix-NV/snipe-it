@@ -2,7 +2,7 @@
 
 return array(
 	'eula_text'      			=> 'EULA',
-    'id'      					=> 'ഐഡി',
+    'id'      					=> 'ID',
     'parent'   					=> 'Parent',
     'require_acceptance'      	=> 'Acceptance',
     'title'      				=> 'Asset Category Name',

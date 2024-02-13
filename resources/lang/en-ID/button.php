@@ -15,10 +15,10 @@ return [
     'select_file'				=> 'Pilih Berkas...',
     'select_files'				=> 'Pilih file...',
     'generate_labels'           => '{1} Generate Label|[2,*] Generate Labels',
-    'send_password_link'        => 'Kirim tautan atur ulang kata sandi',
+    'send_password_link'        => 'Send Password Reset Link',
     'go'                        => 'Go',
     'bulk_actions'              => 'Bulk Actions',
     'add_maintenance'           => 'Add Maintenance',
     'append'                    => 'Append',
-    'new'                       => 'Baru',
+    'new'                       => 'New',
 ];

@@ -38,7 +38,6 @@ class AssetModelsController extends Controller
                 'image',
                 'name',
                 'model_number',
-                'min_amt',
                 'eol',
                 'notes',
                 'created_at',
@@ -46,7 +45,6 @@ class AssetModelsController extends Controller
                 'requestable',
                 'assets_count',
                 'category',
-                'fieldset',
             ];
 
         $assetmodels = AssetModel::select([
@@ -54,7 +52,6 @@ class AssetModelsController extends Controller
             'models.image',
             'models.name',
             'model_number',
-            'min_amt',
             'eol',
             'requestable',
             'models.notes',
@@ -94,9 +91,6 @@ class AssetModelsController extends Controller
                 break;
             case 'category':
                 $assetmodels->OrderCategory($order);
-                break;
-            case 'fieldset':
-                $assetmodels->OrderFieldset($order);
                 break;
             default:
                 $assetmodels->orderBy($sort, $order);

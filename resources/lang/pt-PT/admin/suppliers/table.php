@@ -19,6 +19,7 @@ return array(
     'state'                 => 'Distrito',
     'suppliers'             => 'Fornecedores',
     'update'                => 'Atualizar Fornecedor',
+    'url'                   => 'URL',
     'view'                  => 'Ver Fornecedor',
     'view_assets_for'       => 'Ver Artigos para',
     'zip'                   => 'Código postal',

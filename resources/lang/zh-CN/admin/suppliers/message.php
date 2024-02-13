@@ -2,7 +2,6 @@
 
 return array(
 
-    'deleted' => '已删除的供应商',
     'does_not_exist' => '供应商不存在。',
 
 

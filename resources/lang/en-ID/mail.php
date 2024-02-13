@@ -11,7 +11,7 @@ return [
     'asset' => 'Aset:',
     'asset_name' => 'Nama Aset:',
     'asset_requested' => 'Permintaan aset',
-    'asset_tag' => 'Penanda aset',
+    'asset_tag' => 'Asset Tag',
     'assigned_to' => 'Ditetapkan untuk',
     'best_regards' => 'Salam hormat,',
     'canceled' => 'Dibatalkan:',

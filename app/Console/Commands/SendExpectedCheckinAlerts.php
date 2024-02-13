@@ -9,7 +9,6 @@ use App\Notifications\ExpectedCheckinAdminNotification;
 use App\Notifications\ExpectedCheckinNotification;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class SendExpectedCheckinAlerts extends Command
 {
@@ -43,7 +42,7 @@ class SendExpectedCheckinAlerts extends Command
     public function handle()
     {
         $settings = Setting::getSettings();
-        $whenNotify = Carbon::now();
+        $whenNotify = Carbon::now()->addDays(7);
         $assets = Asset::with('assignedTo')->whereNotNull('assigned_to')->whereNotNull('expected_checkin')->where('expected_checkin', '<=', $whenNotify)->get();
 
         $this->info($whenNotify.' is deadline');
@@ -51,7 +50,6 @@ class SendExpectedCheckinAlerts extends Command
 
         foreach ($assets as $asset) {
             if ($asset->assigned && $asset->checkedOutToUser()) {
-                Log::info('Sending ExpectedCheckinNotification to ' . $asset->assigned->email);
                 $asset->assigned->notify((new ExpectedCheckinNotification($asset)));
             }
         }

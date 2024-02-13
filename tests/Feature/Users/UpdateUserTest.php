@@ -10,22 +10,7 @@ class UpdateUserTest extends TestCase
 {
     use InteractsWithSettings;
 
-    public function testUsersCanBeActivatedWithNumber()
-    {
-        $admin = User::factory()->superuser()->create();
-        $user = User::factory()->create(['activated' => 0]);
-
-        $this->actingAs($admin)
-            ->put(route('users.update', $user), [
-                'first_name' => $user->first_name,
-                'username' => $user->username,
-                'activated' => 1,
-            ]);
-
-        $this->assertEquals(1, $user->refresh()->activated);
-    }
-
-    public function testUsersCanBeActivatedWithBooleanTrue()
+    public function testUsersCanBeActivated()
     {
         $admin = User::factory()->superuser()->create();
         $user = User::factory()->create(['activated' => false]);
@@ -34,13 +19,13 @@ class UpdateUserTest extends TestCase
             ->put(route('users.update', $user), [
                 'first_name' => $user->first_name,
                 'username' => $user->username,
-                'activated' => true,
+                'activated' => 1,
             ]);
 
-        $this->assertEquals(1, $user->refresh()->activated);
+        $this->assertTrue($user->refresh()->activated);
     }
 
-    public function testUsersCanBeDeactivatedWithNumber()
+    public function testUsersCanBeDeactivated()
     {
         $admin = User::factory()->superuser()->create();
         $user = User::factory()->create(['activated' => true]);
@@ -49,25 +34,12 @@ class UpdateUserTest extends TestCase
             ->put(route('users.update', $user), [
                 'first_name' => $user->first_name,
                 'username' => $user->username,
-                'activated' => 0,
+                // checkboxes that are not checked are
+                // not included in the request payload
+                // 'activated' => 0,
             ]);
 
-        $this->assertEquals(0, $user->refresh()->activated);
-    }
-
-    public function testUsersCanBeDeactivatedWithBooleanFalse()
-    {
-        $admin = User::factory()->superuser()->create();
-        $user = User::factory()->create(['activated' => true]);
-
-        $this->actingAs($admin)
-            ->put(route('users.update', $user), [
-                'first_name' => $user->first_name,
-                'username' => $user->username,
-                'activated' => false,
-            ]);
-
-        $this->assertEquals(0, $user->refresh()->activated);
+        $this->assertFalse($user->refresh()->activated);
     }
 
     public function testUsersUpdatingThemselvesDoNotDeactivateTheirAccount()
@@ -78,8 +50,12 @@ class UpdateUserTest extends TestCase
             ->put(route('users.update', $admin), [
                 'first_name' => $admin->first_name,
                 'username' => $admin->username,
+                // checkboxes that are disabled are not
+                // included in the request payload
+                // even if they are checked
+                // 'activated' => 0,
             ]);
 
-        $this->assertEquals(1, $admin->refresh()->activated);
+        $this->assertTrue($admin->refresh()->activated);
     }
 }

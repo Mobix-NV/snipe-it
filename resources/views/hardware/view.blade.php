@@ -221,11 +221,7 @@
                                                 <strong>{{ trans('admin/hardware/form.serial') }}</strong>
                                             </div>
                                             <div class="col-md-6">
-                                                <span class="js-copy">{{ $asset->serial  }}</span>
-
-                                                <i class="fa-regular fa-clipboard js-copy-link" data-clipboard-target=".js-copy" aria-hidden="true" data-tooltip="true" data-placement="top" title="{{ trans('general.copy_to_clipboard') }}">
-                                                    <span class="sr-only">{{ trans('general.copy_to_clipboard') }}</span>
-                                                </i>
+                                                {{ $asset->serial  }}
                                             </div>
                                         </div>
                                     @endif
@@ -631,7 +627,7 @@
                                         </div>
                                     @endif
 
-                                    @if (($asset->asset_eol_date) && ($asset->purchase_date))
+                                    @if (($asset->model) && ($asset->model->eol))
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <strong>
@@ -639,7 +635,7 @@
                                                 </strong>
                                             </div>
                                             <div class="col-md-6">
-                                                {{ Carbon::parse($asset->asset_eol_date)->diffInMonths($asset->purchase_date) }}
+                                                {{ $asset->model->eol }}
                                                 {{ trans('admin/hardware/form.months') }}
 
                                             </div>
@@ -650,9 +646,6 @@
                                             <div class="col-md-2">
                                                 <strong>
                                                     {{ trans('admin/hardware/form.eol_date') }}
-                                                    @if ($asset->purchase_date)
-							{!! $asset->asset_eol_date < date("Y-m-d") ? '<i class="fas fa-exclamation-triangle text-orange" aria-hidden="true"></i>' : '' !!}
-                                                    @endif
                                                 </strong>
                                             </div>
                                             <div class="col-md-6">
@@ -662,15 +655,6 @@
                                                 {{ Carbon::parse($asset->asset_eol_date)->diffForHumans(['parts' => 2]) }}
                                                 @else
                                                     {{ trans('general.na_no_purchase_date') }}
-                                                @endif
-                                                @if ($asset->eol_explicit)
-                                                    <i class="fas fa-exclamation-triangle text-orange"
-                                                       aria-hidden="true"
-                                                       data-tooltip="true"
-                                                       data-placement="top"
-                                                       data-title="Explicit EOL"
-                                                       title="Explicit EOL">
-                                                    </i>
                                                 @endif
                                             </div>
                                         </div>
@@ -988,7 +972,6 @@
                                         <tr>
                                             <th class="col-md-4">{{ trans('general.name') }}</th>
                                             <th class="col-md-4"><span class="line"></span>{{ trans('admin/licenses/form.license_key') }}</th>
-                                            <th class="col-md-4"><span class="line"></span>{{ trans('admin/licenses/form.expiration') }}</th>
                                             <th class="col-md-1"><span class="line"></span>{{ trans('table.actions') }}</th>
                                         </tr>
                                         </thead>
@@ -1003,9 +986,6 @@
                                                         @else
                                                             ------------
                                                         @endcan
-                                                    </td>
-                                                    <td>
-                                                        {{ Helper::getFormattedDateObject($seat->license->expiration_date, 'date', false) }}
                                                     </td>
                                                     <td>
                                                         <a href="{{ route('licenses.checkin', $seat->id) }}" class="btn btn-sm bg-purple" data-tooltip="true">{{ trans('general.checkin') }}</a>
@@ -1037,8 +1017,6 @@
                                         <th>{{ trans('general.qty') }}</th>
                                         <th>{{ trans('general.purchase_cost') }}</th>
                                         <th>{{trans('admin/hardware/form.serial')}}</th>
-                                        <th>{{trans('general.checkin')}}</th>
-                                        <th></th>
                                         </thead>
                                         <tbody>
                                         <?php $totalCost = 0; ?>
@@ -1053,9 +1031,6 @@
                                                     <td>{{ $component->pivot->assigned_qty }}</td>
                                                     <td>{{ Helper::formatCurrencyOutput($component->purchase_cost) }} each</td>
                                                     <td>{{ $component->serial }}</td>
-                                                    <td>
-                                                        <a href="{{ route('components.checkin.show', $component->pivot->id) }}" class="btn btn-sm bg-purple" data-tooltip="true">{{ trans('general.checkin') }}</a>
-                                                    </td>
 
                                                     <?php $totalCost = $totalCost + ($component->purchase_cost *$component->pivot->assigned_qty) ?>
                                                 </tr>
@@ -1210,18 +1185,15 @@
                 <thead>
                 <tr>
                   <th data-visible="true" data-field="icon" style="width: 40px;" class="hidden-xs" data-formatter="iconFormatter">{{ trans('admin/hardware/table.icon') }}</th>
-                  <th data-visible="true" data-field="action_date" data-sortable="true" data-formatter="dateDisplayFormatter">{{ trans('general.date') }}</th>
-                  <th data-visible="true" data-field="admin" data-formatter="usersLinkObjFormatter">{{ trans('general.admin') }}</th>
-                  <th data-visible="true" data-field="action_type">{{ trans('general.action') }}</th>
-                  <th data-visible="true" data-field="item" data-formatter="polymorphicItemFormatter">{{ trans('general.item') }}</th>
-                  <th data-visible="true" data-field="target" data-formatter="polymorphicItemFormatter">{{ trans('general.target') }}</th>
-                  <th data-field="note">{{ trans('general.notes') }}</th>
-                  <th data-field="signature_file" data-visible="false"  data-formatter="imageFormatter">{{ trans('general.signature') }}</th>
-                  <th data-visible="false" data-field="file" data-visible="false"  data-formatter="fileUploadFormatter">{{ trans('general.download') }}</th>
-                   <th data-field="log_meta" data-visible="true" data-formatter="changeLogFormatter">{{ trans('admin/hardware/table.changed')}}</th>
-                   <th data-field="remote_ip" data-visible="false" data-sortable="true">{{ trans('admin/settings/general.login_ip') }}</th>
-                   <th data-field="user_agent" data-visible="false" data-sortable="true">{{ trans('admin/settings/general.login_user_agent') }}</th>
-                   <th data-field="action_source" data-visible="false" data-sortable="true">{{ trans('general.action_source') }}</th>
+                  <th class="col-sm-2" data-visible="true" data-field="action_date" data-formatter="dateDisplayFormatter">{{ trans('general.date') }}</th>
+                  <th class="col-sm-1" data-visible="true" data-field="admin" data-formatter="usersLinkObjFormatter">{{ trans('general.admin') }}</th>
+                  <th class="col-sm-1" data-visible="true" data-field="action_type">{{ trans('general.action') }}</th>
+                  <th class="col-sm-2" data-visible="true" data-field="item" data-formatter="polymorphicItemFormatter">{{ trans('general.item') }}</th>
+                  <th class="col-sm-2" data-visible="true" data-field="target" data-formatter="polymorphicItemFormatter">{{ trans('general.target') }}</th>
+                  <th class="col-sm-2" data-field="note">{{ trans('general.notes') }}</th>
+                  <th class="col-md-3" data-field="signature_file" data-visible="false"  data-formatter="imageFormatter">{{ trans('general.signature') }}</th>
+                  <th class="col-md-3" data-visible="false" data-field="file" data-visible="false"  data-formatter="fileUploadFormatter">{{ trans('general.download') }}</th>
+                  <th class="col-sm-2" data-field="log_meta" data-visible="true" data-formatter="changeLogFormatter">{{ trans('admin/hardware/table.changed')}}</th>
                 </tr>
                 </thead>
               </table>
@@ -1294,12 +1266,8 @@
                                                 </td>
                                                 <td>
                                                     @if (($file->filename) && (Storage::exists('private_uploads/assets/'.$file->filename)))
-                                                        <a href="{{ route('show/assetfile', [$asset->id, $file->id, 'download'=>'true']) }}" class="btn btn-sm btn-default">
+                                                        <a href="{{ route('show/assetfile', [$asset->id, $file->id]) }}" class="btn btn-default">
                                                             <i class="fas fa-download" aria-hidden="true"></i>
-                                                        </a>
-
-                                                        <a href="{{ route('show/assetfile', [$asset->id, $file->id, 'inline'=>'true']) }}" class="btn btn-sm btn-default" target="_blank">
-                                                            <i class="fa fa-external-link" aria-hidden="true"></i>
                                                         </a>
                                                     @endif
                                                 </td>
@@ -1395,14 +1363,9 @@
                                                 </td>
                                                 <td>
                                                     @if (($file->filename) && (Storage::exists('private_uploads/assetmodels/'.$file->filename)))
-                                                        <a href="{{ route('show/modelfile', [$asset->model->id, $file->id]) }}" class="btn btn-sm btn-default">
+                                                        <a href="{{ route('show/modelfile', [$asset->model->id, $file->id]) }}" class="btn btn-default">
                                                             <i class="fas fa-download" aria-hidden="true"></i>
                                                         </a>
-
-                                                        <a href="{{ route('show/modelfile', [$asset->model->id, $file->id, 'inline'=>'true']) }}" class="btn btn-sm btn-default" target="_blank">
-                                                            <i class="fa fa-external-link" aria-hidden="true"></i>
-                                                        </a>
-
                                                     @endif
                                                 </td>
                                                 <td>

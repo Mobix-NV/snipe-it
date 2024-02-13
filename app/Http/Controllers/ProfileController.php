@@ -56,7 +56,7 @@ class ProfileController extends Controller
         $user->phone = $request->input('phone');
 
         if (! config('app.lock_passwords')) {
-            $user->locale = $request->input('locale', 'en-US');
+            $user->locale = $request->input('locale', 'en');
         }
 
         if ((Gate::allows('self.two_factor')) && ((Setting::getSettings()->two_factor_enabled == '1') && (! config('app.lock_passwords')))) {
@@ -134,7 +134,6 @@ class ProfileController extends Controller
         ];
 
         $validator = \Validator::make($request->all(), $rules);
-
         $validator->after(function ($validator) use ($request, $user) {
             if (! Hash::check($request->input('current_password'), $user->password)) {
                 $validator->errors()->add('current_password', trans('validation.custom.hashed_pass'));
@@ -160,14 +159,12 @@ class ProfileController extends Controller
         });
 
         if (! $validator->fails()) {
-
             $user->password = Hash::make($request->input('password'));
-            // We have to use saveQuietly here because for some reason this method was calling the User Oserver twice :(
-            $user->saveQuietly();
-            
+            $user->save();
+
             // Log the user out of other devices
             Auth::logoutOtherDevices($request->input('password'));
-            return redirect()->route('account')->with('success', trans('passwords.password_change'));
+            return redirect()->route('account.password.index')->with('success', 'Password updated!');
 
         }
         return redirect()->back()->withInput()->withErrors($validator);

@@ -76,7 +76,7 @@ class LicenseCheckinController extends Controller
 
         // Declare the rules for the form validation
         $rules = [
-            'notes'   => 'string|nullable',
+            'note'   => 'string|nullable',
         ];
 
         // Create a new validator instance from our validation rules
@@ -97,11 +97,10 @@ class LicenseCheckinController extends Controller
         // Update the asset data
         $licenseSeat->assigned_to = null;
         $licenseSeat->asset_id = null;
-        $licenseSeat->notes = $request->input('notes');
 
         // Was the asset updated?
         if ($licenseSeat->save()) {
-            event(new CheckoutableCheckedIn($licenseSeat, $return_to, Auth::user(), $request->input('notes')));
+            event(new CheckoutableCheckedIn($licenseSeat, $return_to, Auth::user(), $request->input('note')));
 
             if ($backTo == 'user') {
                 return redirect()->route('users.show', $return_to->id)->with('success', trans('admin/licenses/message.checkin.success'));
@@ -128,13 +127,6 @@ class LicenseCheckinController extends Controller
 
         $license = License::findOrFail($licenseId);
         $this->authorize('checkin', $license);
-
-        if (! $license->reassignable) {
-            // Not allowed to checkin
-            Session::flash('error', 'License not reassignable.');
-
-            return redirect()->back()->withInput();
-        }
 
         $licenseSeatsByUser = LicenseSeat::where('license_id', '=', $licenseId)
             ->whereNotNull('assigned_to')

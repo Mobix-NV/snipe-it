@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Users;
 
-use App\Helpers\StorageHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UploadFileRequest;
+use App\Http\Requests\AssetFileRequest;
 use App\Models\Actionlog;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use enshrined\svgSanitize\Sanitizer;
 use Illuminate\Support\Facades\Storage;
 
 class UserFilesController extends Controller
@@ -18,14 +18,14 @@ class UserFilesController extends Controller
     /**
      * Return JSON response with a list of user details for the getIndex() view.
      *
-     * @param UploadFileRequest $request
+     * @author [A. Gianotto] [<snipe@snipe.net>]
+     * @since [v1.6]
+     * @param AssetFileRequest $request
      * @param int $userId
      * @return string JSON
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     *@author [A. Gianotto] [<snipe@snipe.net>]
-     * @since [v1.6]
      */
-    public function store(UploadFileRequest $request, $userId = null)
+    public function store(AssetFileRequest $request, $userId = null)
     {
         $user = User::find($userId);
         $destinationPath = config('app.private_uploads').'/users';
@@ -40,7 +40,31 @@ class UserFilesController extends Controller
                 return redirect()->back()->with('error', trans('admin/users/message.upload.nofiles'));
             }
             foreach ($files as $file) {
-                $file_name = $request->handleFile('private_uploads/users/', 'user-'.$user->id, $file);
+                
+                $extension = $file->getClientOriginalExtension();
+                $file_name = 'user-'.$user->id.'-'.str_random(8).'-'.str_slug(basename($file->getClientOriginalName(), '.'.$extension)).'.'.$extension;
+
+
+                    // Check for SVG and sanitize it
+                    if ($extension == 'svg') {
+                        \Log::debug('This is an SVG');
+                        \Log::debug($file_name);
+
+                            $sanitizer = new Sanitizer();
+
+                            $dirtySVG = file_get_contents($file->getRealPath());
+                            $cleanSVG = $sanitizer->sanitize($dirtySVG);
+
+                            try {
+                                Storage::put('private_uploads/users/'.$file_name, $cleanSVG);
+                            } catch (\Exception $e) {
+                                \Log::debug('Upload no workie :( ');
+                                \Log::debug($e);
+                            }
+
+                    } else {
+                        Storage::put('private_uploads/users/'.$file_name, file_get_contents($file));
+                }
 
                 //Log the uploaded file to the log
                 $logAction = new Actionlog();
@@ -111,36 +135,22 @@ class UserFilesController extends Controller
      */
     public function show($userId = null, $fileId = null)
     {
-
-        if (empty($fileId)) {
-            return redirect()->route('users.show')->with('error', 'Invalid file request');
-        }
-
         $user = User::find($userId);
 
         // the license is valid
         if (isset($user->id)) {
-
             $this->authorize('view', $user);
 
-            if ($log = Actionlog::whereNotNull('filename')->where('item_id', $user->id)->find($fileId)) {
+            $log = Actionlog::find($fileId);
+            $file = $log->get_src('users');
 
-                // Display the file inline
-                if (request('inline') == 'true') {
-                    $headers = [
-                        'Content-Disposition' => 'inline',
-                    ];
-                    return Storage::download('private_uploads/users/'.$log->filename, $log->filename, $headers);
-                }
-
-                return Storage::download('private_uploads/users/'.$log->filename);
-            }
-
-            return redirect()->route('users.index')->with('error',  trans('admin/users/message.log_record_not_found'));
+            return Response::download($file); //FIXME this doesn't use the new StorageHelper yet, but it's complicated...
         }
+        // Prepare the error message
+        $error = trans('admin/users/message.user_not_found', ['id' => $userId]);
 
-        // Redirect to the user management page if the user doesn't exist
-        return redirect()->route('users.index')->with('error',  trans('admin/users/message.user_not_found', ['id' => $userId]));
+        // Redirect to the licence management page
+        return redirect()->route('users.index')->with('error', $error);
     }
 
 }

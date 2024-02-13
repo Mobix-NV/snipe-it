@@ -10,7 +10,8 @@ return array(
     'support_email'   		=> '支援 Email',
     'support_phone'   		=> '支援電話',
     'support_url'   		=> '支援網址',
-    'warranty_lookup_url'   => '保固查詢網址',
+    'warranty_lookup_url'   => 'Warranty Lookup URL',
     'update'				=> '更新製造商',
+    'url'   				=> '網址',
 
 );

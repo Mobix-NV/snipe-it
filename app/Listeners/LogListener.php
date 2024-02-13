@@ -33,7 +33,7 @@ class LogListener
      */
     public function onCheckoutableCheckedIn(CheckoutableCheckedIn $event)
     {
-        $event->checkoutable->logCheckin($event->checkedOutTo, $event->note, $event->action_date, $event->originalValues);
+        $event->checkoutable->logCheckin($event->checkedOutTo, $event->note, $event->action_date);
     }
 
     /**
@@ -46,7 +46,7 @@ class LogListener
      */
     public function onCheckoutableCheckedOut(CheckoutableCheckedOut $event)
     {
-        $event->checkoutable->logCheckout($event->note, $event->checkedOutTo, $event->checkoutable->last_checkout, $event->originalValues);
+        $event->checkoutable->logCheckout($event->note, $event->checkedOutTo, $event->checkoutable->last_checkout);
     }
 
     /**
@@ -69,6 +69,7 @@ class LogListener
             $logaction->item()->associate($event->acceptance->checkoutable->license);
         }
 
+        \Log::debug('New onCheckoutAccepted Listener fired. logaction: '.print_r($logaction, true));
         $logaction->save();
     }
 

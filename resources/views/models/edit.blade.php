@@ -15,7 +15,6 @@
 @include ('partials.forms.edit.manufacturer-select', ['translated_name' => trans('general.manufacturer'), 'fieldname' => 'manufacturer_id'])
 @include ('partials.forms.edit.model_number')
 @include ('partials.forms.edit.depreciation')
-@include ('partials.forms.edit.minimum_quantity')
 
 <!-- EOL -->
 
@@ -35,8 +34,7 @@
 </div>
 
 <!-- Custom Fieldset -->
-<!-- If $item->id is null we are cloning the model and we need the $model_id variable -->
-@livewire('custom-field-set-default-values-for-model',["model_id" => $item->id ?? $model_id ?? null  ])
+@livewire('custom-field-set-default-values-for-model',["model_id" => $item->id])
 
 @include ('partials.forms.edit.notes')
 @include ('partials.forms.edit.requestable', ['requestable_text' => trans('admin/models/general.requestable')])

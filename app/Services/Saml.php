@@ -394,8 +394,6 @@ class Saml
             'nameIdSPNameQualifier' => $auth->getNameIdSPNameQualifier(),
             'sessionIndex' => $auth->getSessionIndex(),
             'sessionExpiration' => $auth->getSessionExpiration(),
-            'nonce' => $auth->getLastAssertionId(),
-            'assertionNotOnOrAfter' => $auth->getLastAssertionNotOnOrAfter(),
         ];
     }
 

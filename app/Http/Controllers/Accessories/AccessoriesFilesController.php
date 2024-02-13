@@ -4,27 +4,28 @@ namespace App\Http\Controllers\Accessories;
 
 use App\Helpers\StorageHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UploadFileRequest;
+use App\Http\Requests\AssetFileRequest;
 use App\Models\Actionlog;
 use App\Models\Accessory;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Accessory\HttpFoundation\JsonResponse;
+use enshrined\svgSanitize\Sanitizer;
 
 class AccessoriesFilesController extends Controller
 {
     /**
      * Validates and stores files associated with a accessory.
      *
-     * @param UploadFileRequest $request
+     * @todo Switch to using the AssetFileRequest form request validator.
+     * @author [A. Gianotto] [<snipe@snipe.net>]
+     * @since [v1.0]
+     * @param AssetFileRequest $request
      * @param int $accessoryId
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Illuminate\Auth\Access\AuthorizationException
-     *@author [A. Gianotto] [<snipe@snipe.net>]
-     * @since [v1.0]
-     * @todo Switch to using the AssetFileRequest form request validator.
      */
-    public function store(UploadFileRequest $request, $accessoryId = null)
+    public function store(AssetFileRequest $request, $accessoryId = null)
     {
 
         if (config('app.lock_passwords')) {
@@ -44,7 +45,30 @@ class AccessoriesFilesController extends Controller
 
                 foreach ($request->file('file') as $file) {
 
-                    $file_name = $request->handleFile('private_uploads/accessories/', 'accessory-'.$accessory->id, $file);
+                    $extension = $file->getClientOriginalExtension();
+                    $file_name = 'accessory-'.$accessory->id.'-'.str_random(8).'-'.str_slug(basename($file->getClientOriginalName(), '.'.$extension)).'.'.$extension;
+
+
+                    // Check for SVG and sanitize it
+                    if ($extension == 'svg') {
+                        \Log::debug('This is an SVG');
+                        \Log::debug($file_name);
+
+                        $sanitizer = new Sanitizer();
+                        $dirtySVG = file_get_contents($file->getRealPath());
+                        $cleanSVG = $sanitizer->sanitize($dirtySVG);
+
+                        try {
+                            Storage::put('private_uploads/accessories/'.$file_name, $cleanSVG);
+                        } catch (\Exception $e) {
+                            \Log::debug('Upload no workie :( ');
+                            \Log::debug($e);
+                        }
+
+                    } else {
+                        Storage::put('private_uploads/accessories/'.$file_name, file_get_contents($file));
+                    }
+
                     //Log the upload to the log
                     $accessory->logUpload($file_name, e($request->input('notes')));
                 }
@@ -122,8 +146,9 @@ class AccessoriesFilesController extends Controller
             $this->authorize('view', $accessory);
             $this->authorize('accessories.files', $accessory);
 
-            if (! $log = Actionlog::whereNotNull('filename')->where('item_id', $accessory->id)->find($fileId)) {
-                return redirect()->route('accessories.index')->with('error',  trans('admin/users/message.log_record_not_found'));
+            if (! $log = Actionlog::find($fileId)) {
+                return response('No matching record for that asset/file', 500)
+                    ->header('Content-Type', 'text/plain');
             }
 
             $file = 'private_uploads/accessories/'.$log->filename;
@@ -136,19 +161,22 @@ class AccessoriesFilesController extends Controller
                     ->header('Content-Type', 'text/plain');
             } else {
 
-                // Display the file inline
-                if (request('inline') == 'true') {
-                    $headers = [
-                        'Content-Disposition' => 'inline',
-                    ];
-                    return Storage::download($file, $log->filename, $headers);
-                }
-
-
                 // We have to override the URL stuff here, since local defaults in Laravel's Flysystem
                 // won't work, as they're not accessible via the web
                 if (config('filesystems.default') == 'local') { // TODO - is there any way to fix this at the StorageHelper layer?
                     return StorageHelper::downloader($file);
+                } else {
+                    if ($download != 'true') {
+                        \Log::debug('display the file');
+                        if ($contents = file_get_contents(Storage::url($file))) { // TODO - this will fail on private S3 files or large public ones
+                            return Response::make(Storage::url($file)->header('Content-Type', mime_content_type($file)));
+                        }
+
+                        return JsonResponse::create(['error' => 'Failed validation: '], 500);
+                    }
+
+                    return StorageHelper::downloader($file);
+
                 }
             }
         }

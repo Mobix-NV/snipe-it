@@ -92,10 +92,6 @@ class Setting extends Model
         'google_client_secret',
     ];
 
-    protected $casts = [
-        'label2_asset_logo' => 'boolean',
-    ];
-
     /**
      * Get the app settings.
      *  Cache is expired on Setting model saved in EventServiceProvider.
@@ -352,6 +348,7 @@ class Setting extends Model
             'ldap_client_tls_cert',
             'ldap_default_group',
             'ldap_dept',
+            'ldap_emp_num',
             'ldap_phone_field',
             'ldap_jobtitle',
             'ldap_manager',

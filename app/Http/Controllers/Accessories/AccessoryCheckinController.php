@@ -60,10 +60,9 @@ class AccessoryCheckinController extends Controller
 
         $this->authorize('checkin', $accessory);
 
-        $checkin_hours = date('H:i:s');
-        $checkin_at = date('Y-m-d H:i:s');
+        $checkin_at = date('Y-m-d');
         if ($request->filled('checkin_at')) {
-            $checkin_at = $request->input('checkin_at').' '.$checkin_hours;
+            $checkin_at = $request->input('checkin_at');
         }
 
         // Was the accessory updated?

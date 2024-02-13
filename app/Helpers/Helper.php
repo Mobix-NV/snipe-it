@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 use App\Models\Accessory;
-use App\Models\Asset;
-use App\Models\AssetModel;
 use App\Models\Component;
 use App\Models\Consumable;
 use App\Models\CustomField;
@@ -18,63 +16,6 @@ use Carbon\Carbon;
 
 class Helper
 {
-
-
-    /**
-     * This is only used for reversing the migration that updates the locale to the 5-6 letter codes from two
-     * letter codes. The normal dropdowns use the autoglossonyms in the language files located
-     * in resources/en-US/localizations.php.
-     */
-    public static $language_map =  [
-        'af' => 'af-ZA', // Afrikaans
-        'am' => 'am-ET', // Amharic
-        'ar' => 'ar-SA', // Arabic
-        'bg' => 'bg-BG', // Bulgarian
-        'ca' => 'ca-ES', // Catalan
-        'cs' => 'cs-CZ', // Czech
-        'cy' => 'cy-GB', // Welsh
-        'da' => 'da-DK', // Danish
-        'de-i' => 'de-if', // German informal
-        'de' => 'de-DE', // German
-        'el' => 'el-GR', // Greek
-        'en' => 'en-US', // English
-        'et' => 'et-EE', // Estonian
-        'fa' => 'fa-IR', // Persian
-        'fi' => 'fi-FI', // Finnish
-        'fil' => 'fil-PH', // Filipino
-        'fr' => 'fr-FR', // French
-        'he' => 'he-IL', // Hebrew
-        'hr' => 'hr-HR', // Croatian
-        'hu' => 'hu-HU', // Hungarian
-        'id' => 'id-ID', // Indonesian
-        'is' => 'is-IS', // Icelandic
-        'it' => 'it-IT', // Italian
-        'iu' => 'iu-NU', // Inuktitut
-        'ja' => 'ja-JP', // Japanese
-        'ko' => 'ko-KR', // Korean
-        'lt' => 'lt-LT', // Lithuanian
-        'lv' => 'lv-LV', // Latvian
-        'mi' => 'mi-NZ', // Maori
-        'mk' => 'mk-MK', // Macedonian
-        'mn' => 'mn-MN', // Mongolian
-        'ms' => 'ms-MY', // Malay
-        'nl' => 'nl-NL', // Dutch
-        'no' => 'no-NO', // Norwegian
-        'pl' => 'pl-PL', // Polish
-        'ro' => 'ro-RO', // Romanian
-        'ru' => 'ru-RU', // Russian
-        'sk' => 'sk-SK', // Slovak
-        'sl' => 'sl-SI', // Slovenian
-        'so' => 'so-SO', // Somali
-        'ta' => 'ta-IN', // Tamil
-        'th' => 'th-TH', // Thai
-        'tl' => 'tl-PH', // Tagalog
-        'tr' => 'tr-TR', // Turkish
-        'uk' => 'uk-UA', // Ukrainian
-        'vi' => 'vi-VN', // Vietnamese
-        'zu' => 'zu-ZA', // Zulu
-    ];
-
     /**
      * Simple helper to invoke the markdown parser
      *
@@ -130,14 +71,10 @@ class Helper
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
      * @since [v3.3]
-     * @return string
+     * @return array
      */
-    public static function defaultChartColors(int $index = 0)
+    public static function defaultChartColors($index = 0)
     {
-        if ($index < 0) {
-            $index = 0;
-        }
-
         $colors = [
             '#008941',
             '#FF4A46',
@@ -410,19 +347,7 @@ class Helper
         $total_colors = count($colors);
 
         if ($index >= $total_colors) {
-
-            \Log::info('Status label count is '.$index.' and exceeds the allowed count of 266.');
-            //patch fix for array key overflow (color count starts at 1, array starts at 0)
-            $index = $index - $total_colors - 1;
-
-            //constraints to keep result in 0-265 range. This should never be needed, but if something happens
-            //to create this many status labels and it DOES happen, this will keep it from failing at least.
-            if($index < 0) {
-                $index = 0;
-            }
-            elseif($index >($total_colors - 1)) {
-                $index = $total_colors - 1;
-            }
+            $index = $index - $total_colors;
         }
 
         return $colors[$index];
@@ -718,7 +643,6 @@ class Helper
         $consumables = Consumable::withCount('consumableAssignments as consumable_assignments_count')->whereNotNull('min_amt')->get();
         $accessories = Accessory::withCount('users as users_count')->whereNotNull('min_amt')->get();
         $components = Component::whereNotNull('min_amt')->get();
-        $asset_models = AssetModel::where('min_amt', '>', 0)->get();
 
         $avail_consumables = 0;
         $items_array = [];
@@ -777,28 +701,6 @@ class Helper
                 $items_array[$all_count]['percent'] = $percent;
                 $items_array[$all_count]['remaining'] = $avail;
                 $items_array[$all_count]['min_amt'] = $component->min_amt;
-                $all_count++;
-            }
-        }
-
-        foreach ($asset_models as $asset_model){
-
-            $asset = new Asset();
-            $total_owned = $asset->where('model_id', '=', $asset_model->id)->count();
-            $avail = $asset->where('model_id', '=', $asset_model->id)->whereNull('assigned_to')->count();
-
-            if ($avail < ($asset_model->min_amt)+ \App\Models\Setting::getSettings()->alert_threshold) {
-                if ($avail > 0) {
-                    $percent = number_format((($avail / $total_owned) * 100), 0);
-                } else {
-                    $percent = 100;
-                }
-                $items_array[$all_count]['id'] = $asset_model->id;
-                $items_array[$all_count]['name'] = $asset_model->name;
-                $items_array[$all_count]['type'] = 'models';
-                $items_array[$all_count]['percent'] = $percent;
-                $items_array[$all_count]['remaining'] = $avail;
-                $items_array[$all_count]['min_amt'] = $asset_model->min_amt;
                 $all_count++;
             }
         }
@@ -1318,63 +1220,13 @@ class Helper
             return true;
             \Log::debug('app locked!');
         }
-        
+
         return false;
-    }
-
-  
-    /**
-     * Conversion between units of measurement
-     *
-     * @author Grant Le Roux <grant.leroux+snipe-it@gmail.com>
-     * @since 5.0
-     * @param float  $value    Measurement value to convert
-     * @param string $srcUnit  Source unit of measurement
-     * @param string $dstUnit  Destination unit of measurement
-     * @param int    $round    Round the result to decimals (Default false - No rounding)
-     * @return float
-     */
-    public static function convertUnit($value, $srcUnit, $dstUnit, $round=false) {
-        $srcFactor = static::getUnitConversionFactor($srcUnit);
-        $dstFactor = static::getUnitConversionFactor($dstUnit);
-        $output = $value * $srcFactor / $dstFactor;
-        return ($round !== false) ? round($output, $round) : $output;
-    }
-  
-    /**
-     * Get conversion factor from unit of measurement to mm
-     *
-     * @author Grant Le Roux <grant.leroux+snipe-it@gmail.com>
-     * @since 5.0
-     * @param string $unit  Unit of measurement
-     * @return float
-     */
-    public static function getUnitConversionFactor($unit) {
-        switch (strtolower($unit)) {
-            case 'mm':
-                return 1.0;
-            case 'cm':
-                return 10.0;
-            case 'm':
-                return 1000.0;
-            case 'in':
-                return 25.4;
-            case 'ft':
-                return 12 * static::getUnitConversionFactor('in');
-            case 'yd':
-                return 3 * static::getUnitConversionFactor('ft');
-            case 'pt':
-                return (1 / 72) * static::getUnitConversionFactor('in');
-            default:
-                throw new \InvalidArgumentException('Unit: \'' . $unit . '\' is not supported');
-
-                return false;
-        }
     }
 
 
     /*
-     * I know it's gauche to return a shitty HTML string, but this is just a helper and since it will be the same every single time,
+     * I know it's gauche  to return a shitty HTML string, but this is just a helper and since it will be the same every single time,
      * it seemed pretty safe to do here. Don't you judge me.
      */
     public static function showDemoModeFieldWarning() {
@@ -1382,55 +1234,4 @@ class Helper
             return "<p class=\"text-warning\"><i class=\"fas fa-lock\"></i>" . trans('general.feature_disabled') . "</p>";
         }
     }
-
-
-    /**
-     * Ah, legacy code.
-     *
-     * This corrects the original mistakes from 2013 where we used the wrong locale codes. Hopefully we
-     * can get rid of this in a future version, but this should at least give us the belt and suspenders we need
-     * to be sure this change is not too disruptive.
-     *
-     * In this array, we ONLY include the older languages where we weren't using the correct locale codes.
-     *
-     * @see public static $language_map in this file
-     * @author A. Gianotto <snipe@snipe.net>
-     * @since 6.3.0
-     *
-     * @param $language_code
-     * @return string []
-     */
-    public static function mapLegacyLocale($language_code = null)
-    {
-
-        if (strlen($language_code) > 4) {
-            return $language_code;
-        }
-
-        foreach (self::$language_map as $legacy => $new) {
-            if ($language_code == $legacy) {
-                \Log::debug('Current language is '.$legacy.', using '.$new.' instead');
-                return $new;
-            }
-        }
-
-        // Return US english if we don't have a match
-        return 'en-US';
-    }
-
-    public static function mapBackToLegacyLocale($new_locale = null)
-    {
-        if (strlen($new_locale) <= 4) {
-            return $new_locale; //"new locale" apparently wasn't quite so new
-        }
-
-        // This does a *reverse* search against our new language map array - given the value, find the *key* for it
-        $legacy_locale = array_search($new_locale, self::$language_map);
-
-        if($legacy_locale !== false) {
-            return $legacy_locale;
-        }
-        return $new_locale; // better that you have some weird locale that doesn't fit into our mappings anywhere than 'void'
-    }
-
 }

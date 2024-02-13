@@ -11,7 +11,6 @@ return [
     'create' => [
         'error'   		=> 'Equipo no creado, intentalo de nuevo. :(',
         'success' 		=> 'Equipo creado. :)',
-        'success_linked' => 'Activo con etiqueta :tag creado con éxito. <strong><a href=":link" style="color: white;">Haga clic aquí para ver</a></strong>.',
     ],
 
     'update' => [
@@ -52,7 +51,6 @@ return [
         'success'               => 'Tu archivo ha sido importado',
         'file_delete_success'   => 'Tu archivo ha sido eliminado con éxito',
         'file_delete_error'      => 'No pudimos eliminar tu archivo',
-        'file_missing' => 'Falta el archivo seleccionado',
         'header_row_has_malformed_characters' => 'Uno o más atributos de la fila de encabezado contiene caracteres UTF-8 mal formados',
         'content_row_has_malformed_characters' => 'Uno o más atributos de la fila de encabezado contiene caracteres UTF-8 mal formados',
     ],

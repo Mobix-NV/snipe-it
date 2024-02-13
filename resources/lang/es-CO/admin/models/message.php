@@ -2,9 +2,8 @@
 
 return array(
 
-    'deleted' => 'Modelo de recurso eliminado',
     'does_not_exist' => 'Modelo inexistente.',
-    'no_association' => '¡ATENCIÓN! ¡El modelo de activo para este artículo no es válido o falta!',
+    'no_association' => 'NINGUN MODELO ASOCIADO.',
     'no_association_fix' => 'Esto romperá cosas de formas extrañas y horribles. Edite este activo ahora para asignarle un modelo.',
     'assoc_users'	 => 'Este modelo está asociado a uno o más equipos actualmente, por lo que no puede ser eliminado. Por favor elimina los equipos asociados, e inténtalo de nuevo. ',
 
@@ -33,14 +32,14 @@ return array(
 
     'bulkedit' => array(
         'error'   		=> 'Ningún campo ha cambiado, no hay nada que actualizar.',
-        'success' 		=> 'Modelo actualizado correctamente. |:model_count modelos actualizados correctamente.',
-        'warn'          => 'Está a punto de actualizar las propiedades del siguiente modelo: |Está a punto de editar las propiedades de los siguientes :model_count modelos:',
+        'success' 		=> 'Model successfully updated. |:model_count models successfully updated.',
+        'warn'          => 'You are about to update the properies of the following model: |You are about to edit the properties of the following :model_count models:',
 
     ),
 
     'bulkdelete' => array(
         'error'   		    => 'Ningún modelo fue seleccionado, no se eliminó nada.',
-        'success' 		    => 'Modelo eliminado!|:success_count modelos eliminados!',
+        'success' 		    => 'Model deleted!|:success_count models deleted!',
         'success_partial' 	=> ':success_count modelos fueron eliminados, sin embargo, :fail_count no pudieron ser eliminados debido a que aún tienen equipos asociados a ellos.'
     ),
 
